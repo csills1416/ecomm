@@ -27,21 +27,21 @@ const Cart = () => {
   useEffect(() => {
     async function getCart() {
       const cart = await idbPromise('cart', 'get');
-      dispatch({ type: ADD_MULTIPLE_TO_CART, products: [...cart] });
+      dispatch(addMultipleToCart([...cart]));
     }
 
-    if (!state.cart.length) {
+    if (!cartState.length) {
       getCart();
     }
-  }, [state.cart.length, dispatch]);
+  }, [cartState.length, dispatch]);
 
-  function toggleCart() {
-    dispatch({ type: TOGGLE_CART });
+  function handleToggleCart() {
+    dispatch(toggleCart());
   }
 
   function calculateTotal() {
     let sum = 0;
-    state.cart.forEach((item) => {
+    cartState.forEach((item) => {
       sum += item.price * item.purchaseQuantity;
     });
     return sum.toFixed(2);
@@ -50,7 +50,7 @@ const Cart = () => {
   function submitCheckout() {
     const productIds = [];
 
-    state.cart.forEach((item) => {
+    cartState.forEach((item) => {
       for (let i = 0; i < item.purchaseQuantity; i++) {
         productIds.push(item._id);
       }
@@ -61,9 +61,9 @@ const Cart = () => {
     });
   }
 
-  if (!state.cartOpen) {
+  if (!cartState.cartOpen) {
     return (
-      <div className="cart-closed" onClick={toggleCart}>
+      <div className="cart-closed" onClick={handleToggleCart}>
         <span role="img" aria-label="trash">
           🛒
         </span>
@@ -73,13 +73,13 @@ const Cart = () => {
 
   return (
     <div className="cart">
-      <div className="close" onClick={toggleCart}>
+      <div className="close" onClick={handleToggleCart}>
         [close]
       </div>
       <h2>Shopping Cart</h2>
-      {state.cart.length ? (
+      {cartState.length ? (
         <div>
-          {state.cart.map((item) => (
+          {cartState.map((item) => (
             <CartItem key={item._id} item={item} />
           ))}
 
